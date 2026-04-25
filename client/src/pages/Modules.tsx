@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -318,6 +318,7 @@ export default function Modules() {
       {/* Multi-step Module Modal */}
       <Dialog open={!!selectedModuleId} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
+          <DialogTitle className="sr-only">{activeModule?.title ?? "Module"}</DialogTitle>
           {activeModule && parsedContent && (
             <div className="flex flex-col">
               {/* Modal header */}
