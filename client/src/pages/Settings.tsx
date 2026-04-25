@@ -6,80 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import AppShell from "@/components/AppShell";
 import { Bell, Globe, Lock, LogOut, Save, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-type Language = "en" | "fil";
-
-const TRANSLATIONS = {
-  en: {
-    settings: "Settings",
-    settingsDesc: "Manage your account and preferences.",
-    profile: "Profile",
-    profileDesc: "Update your personal information.",
-    fullName: "Full Name",
-    email: "Email Address",
-    phone: "Phone Number",
-    address: "Address",
-    saveChanges: "Save Changes",
-    security: "Security",
-    securityDesc: "Change your password.",
-    currentPassword: "Current Password",
-    newPassword: "New Password",
-    confirmPassword: "Confirm New Password",
-    updatePassword: "Update Password",
-    language: "Language",
-    languageDesc: "Choose your preferred language.",
-    notifications: "Notifications",
-    notificationsDesc: "Manage your notification preferences.",
-    progressAlerts: "Progress Alerts",
-    progressAlertsDesc: "Get notified when a module score is recorded for your child.",
-    moduleCompletion: "Module Completion",
-    moduleCompletionDesc: "Receive a pop-up update each time your child completes a module activity.",
-    signOut: "Sign Out",
-    signOutDesc: "Sign out of your ALIRA account.",
-  },
-  fil: {
-    settings: "Mga Setting",
-    settingsDesc: "Pamahalaan ang iyong account at mga kagustuhan.",
-    profile: "Profile",
-    profileDesc: "I-update ang iyong personal na impormasyon.",
-    fullName: "Buong Pangalan",
-    email: "Email Address",
-    phone: "Numero ng Telepono",
-    address: "Address",
-    saveChanges: "I-save ang mga Pagbabago",
-    security: "Seguridad",
-    securityDesc: "Baguhin ang iyong password.",
-    currentPassword: "Kasalukuyang Password",
-    newPassword: "Bagong Password",
-    confirmPassword: "Kumpirmahin ang Bagong Password",
-    updatePassword: "I-update ang Password",
-    language: "Wika",
-    languageDesc: "Piliin ang iyong gustong wika.",
-    notifications: "Mga Abiso",
-    notificationsDesc: "Pamahalaan ang iyong mga kagustuhan sa abiso.",
-    progressAlerts: "Mga Alerto sa Progreso",
-    progressAlertsDesc: "Maabisuhan kapag naitala ang isang module score para sa iyong anak.",
-    moduleCompletion: "Pagkumpleto ng Module",
-    moduleCompletionDesc: "Makatanggap ng pop-up update tuwing kumukumpleto ng module activity ang iyong anak.",
-    signOut: "Mag-sign Out",
-    signOutDesc: "Mag-sign out sa iyong ALIRA account.",
-  },
-};
-
 export default function Settings() {
   const { user, logout } = useAuth();
-  const [lang, setLang] = useState<Language>("en");
-  const t = TRANSLATIONS[lang];
+  const { language, setLanguage, t } = useLanguage();
 
   const [profile, setProfile] = useState({
     fullName: user?.name ?? "",
     email: user?.email ?? "",
-    phone: "",
-    address: "",
   });
 
   const [passwords, setPasswords] = useState({
@@ -142,9 +81,9 @@ export default function Settings() {
       <div className="p-6 max-w-2xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-normal text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            {t.settings}
+            {t.settings.title}
           </h1>
-          <p className="text-muted-foreground">{t.settingsDesc}</p>
+          <p className="text-muted-foreground">{t.settings.profileSub}</p>
         </div>
 
         <div className="space-y-6">
@@ -156,8 +95,8 @@ export default function Settings() {
                   <User className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t.profile}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{t.profileDesc}</p>
+                  <CardTitle className="text-base">{t.settings.profile}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{t.settings.profileSub}</p>
                 </div>
               </div>
             </CardHeader>
@@ -165,14 +104,14 @@ export default function Settings() {
               <form onSubmit={handleSaveProfile} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>{t.fullName}</Label>
+                    <Label>{t.settings.fullName}</Label>
                     <Input
                       value={profile.fullName}
                       onChange={(e) => setProfile((p) => ({ ...p, fullName: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>{t.email}</Label>
+                    <Label>{t.settings.email}</Label>
                     <Input
                       type="email"
                       value={profile.email}
@@ -182,7 +121,7 @@ export default function Settings() {
                 </div>
                 <Button type="submit" size="sm" disabled={updateProfile.isPending}>
                   <Save className="w-4 h-4 mr-2" />
-                  {updateProfile.isPending ? "Saving..." : t.saveChanges}
+                  {updateProfile.isPending ? t.settings.saving : t.settings.saveProfile}
                 </Button>
               </form>
             </CardContent>
@@ -196,15 +135,15 @@ export default function Settings() {
                   <Lock className="w-4 h-4 text-amber-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t.security}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{t.securityDesc}</p>
+                  <CardTitle className="text-base">{t.settings.security}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{t.settings.securitySub}</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleChangePassword} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>{t.currentPassword}</Label>
+                  <Label>{t.settings.currentPassword}</Label>
                   <Input
                     type="password"
                     value={passwords.current}
@@ -214,7 +153,7 @@ export default function Settings() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>{t.newPassword}</Label>
+                    <Label>{t.settings.newPassword}</Label>
                     <Input
                       type="password"
                       value={passwords.newPass}
@@ -223,7 +162,7 @@ export default function Settings() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>{t.confirmPassword}</Label>
+                    <Label>{t.settings.confirmPassword}</Label>
                     <Input
                       type="password"
                       value={passwords.confirm}
@@ -233,7 +172,7 @@ export default function Settings() {
                   </div>
                 </div>
                 <Button type="submit" size="sm" disabled={changePassword.isPending}>
-                  {changePassword.isPending ? "Updating..." : t.updatePassword}
+                  {changePassword.isPending ? t.settings.saving : t.settings.updatePassword}
                 </Button>
               </form>
             </CardContent>
@@ -247,17 +186,17 @@ export default function Settings() {
                   <Globe className="w-4 h-4 text-blue-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t.language}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{t.languageDesc}</p>
+                  <CardTitle className="text-base">{t.settings.language}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{t.settings.languageSub}</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex gap-3">
                 <button
-                  onClick={() => setLang("en")}
+                  onClick={() => setLanguage("en")}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
-                    lang === "en"
+                    language === "en"
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card text-foreground border-border hover:bg-muted"
                   }`}
@@ -265,9 +204,9 @@ export default function Settings() {
                   🇺🇸 English
                 </button>
                 <button
-                  onClick={() => setLang("fil")}
+                  onClick={() => setLanguage("fil")}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
-                    lang === "fil"
+                    language === "fil"
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card text-foreground border-border hover:bg-muted"
                   }`}
@@ -287,8 +226,8 @@ export default function Settings() {
                     <Bell className="w-4 h-4 text-purple-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{t.notifications}</CardTitle>
-                    <p className="text-xs text-muted-foreground">{t.notificationsDesc}</p>
+                    <CardTitle className="text-base">{t.settings.notifications}</CardTitle>
+                    <p className="text-xs text-muted-foreground">{t.settings.notificationsSub}</p>
                   </div>
                 </div>
                 {unreadNotifs.length > 0 && (
@@ -299,8 +238,8 @@ export default function Settings() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-2">
                 <div>
-                  <div className="text-sm font-medium text-foreground">{t.progressAlerts}</div>
-                  <div className="text-xs text-muted-foreground">{t.progressAlertsDesc}</div>
+                  <div className="text-sm font-medium text-foreground">{t.settings.progressAlerts}</div>
+                  <div className="text-xs text-muted-foreground">{t.settings.progressAlertsSub}</div>
                 </div>
                 <Switch
                   checked={notifPrefs.progressAlerts}
@@ -309,8 +248,8 @@ export default function Settings() {
               </div>
               <div className="flex items-center justify-between py-2">
                 <div>
-                  <div className="text-sm font-medium text-foreground">{t.moduleCompletion}</div>
-                  <div className="text-xs text-muted-foreground">{t.moduleCompletionDesc}</div>
+                  <div className="text-sm font-medium text-foreground">{t.settings.moduleCompletion}</div>
+                  <div className="text-xs text-muted-foreground">{t.settings.moduleCompletionSub}</div>
                 </div>
                 <Switch
                   checked={notifPrefs.moduleCompletion}
@@ -356,8 +295,8 @@ export default function Settings() {
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-foreground">{t.signOut}</div>
-                  <div className="text-xs text-muted-foreground">{t.signOutDesc}</div>
+                  <div className="text-sm font-medium text-foreground">{t.settings.signOut}</div>
+                  <div className="text-xs text-muted-foreground">{t.settings.signOutSub}</div>
                 </div>
                 <Button
                   variant="outline"
@@ -366,7 +305,7 @@ export default function Settings() {
                   onClick={logout}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  {t.signOut}
+                  {t.settings.signOutBtn}
                 </Button>
               </div>
             </CardContent>

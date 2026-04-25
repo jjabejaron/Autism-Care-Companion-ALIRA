@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Activity, Baby, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
@@ -9,6 +10,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 
 export default function Progress() {
   const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const { t } = useLanguage();
 
   const { data: children = [] } = trpc.children.list.useQuery();
   // Auto-select first child safely in effect
@@ -35,7 +37,6 @@ export default function Progress() {
     : 0;
 
   const highestScore = scores.length > 0 ? Math.max(...scores.map((s) => s.score)) : 0;
-  const lowestScore = scores.length > 0 ? Math.min(...scores.map((s) => s.score)) : 0;
 
   const chartData = scores
     .slice()
@@ -54,14 +55,14 @@ export default function Progress() {
         <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-normal text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              Progress Report
+              {t.progress.title}
             </h1>
-            <p className="text-muted-foreground">Track your child's activity scores and development journey.</p>
+            <p className="text-muted-foreground">{t.progress.subtitle}</p>
           </div>
           {children.length > 0 && (
             <Select value={selectedChildId} onValueChange={setSelectedChildId}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select child" />
+                <SelectValue placeholder={t.modules.selectChild} />
               </SelectTrigger>
               <SelectContent>
                 {children.map((c) => (
@@ -78,7 +79,7 @@ export default function Progress() {
           <Card className="border-border">
             <CardContent className="py-12 text-center">
               <Baby className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">Select a child to view their progress report.</p>
+              <p className="text-muted-foreground">{t.progress.selectChild}</p>
             </CardContent>
           </Card>
         ) : (
@@ -88,21 +89,21 @@ export default function Progress() {
               <Card className="border-border">
                 <CardContent className="pt-5 pb-5">
                   <div className="text-3xl font-bold text-primary">{avgScore}%</div>
-                  <div className="text-sm font-medium text-foreground mt-1">Average Score</div>
+                  <div className="text-sm font-medium text-foreground mt-1">{t.progress.avgScore}</div>
                   <div className="text-xs text-muted-foreground">{scores.length} activities</div>
                 </CardContent>
               </Card>
               <Card className="border-border">
                 <CardContent className="pt-5 pb-5">
                   <div className="text-3xl font-bold text-green-600">{highestScore}%</div>
-                  <div className="text-sm font-medium text-foreground mt-1">Best Score</div>
+                  <div className="text-sm font-medium text-foreground mt-1">{t.progress.highest}</div>
                   <div className="text-xs text-muted-foreground">Personal best</div>
                 </CardContent>
               </Card>
               <Card className="border-border">
                 <CardContent className="pt-5 pb-5">
                   <div className="text-3xl font-bold text-foreground">{scores.length}</div>
-                  <div className="text-sm font-medium text-foreground mt-1">Activities Done</div>
+                  <div className="text-sm font-medium text-foreground mt-1">{t.progress.totalActivities}</div>
                   <div className="text-xs text-muted-foreground">Total completed</div>
                 </CardContent>
               </Card>
@@ -112,7 +113,7 @@ export default function Progress() {
             {chartData.length > 1 && (
               <Card className="border-border mb-6">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-semibold">Score Trend</CardTitle>
+                  <CardTitle className="text-base font-semibold">{t.progress.progressOverTime}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
@@ -145,7 +146,7 @@ export default function Progress() {
             <Card className="border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-semibold">
-                  Activity History — {selectedChild?.name}
+                  {t.progress.recentActivities} — {selectedChild?.name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -158,8 +159,8 @@ export default function Progress() {
                 ) : scores.length === 0 ? (
                   <div className="text-center py-8">
                     <TrendingUp className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground text-sm">No activity scores yet.</p>
-                    <p className="text-xs text-muted-foreground mt-1">Complete a module to record your first score.</p>
+                    <p className="text-muted-foreground text-sm">{t.progress.noScores}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t.progress.noScoresSub}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">

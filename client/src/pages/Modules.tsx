@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   BookOpen, Brain, CheckCircle2, ChevronRight, Clock, Heart,
   Lightbulb, Sparkles, Users, X, Star, ArrowRight, Trophy
@@ -19,59 +20,13 @@ type AgeGroup = "all" | "toddler" | "early_childhood";
 type SkillCategory = "all" | "cognitive" | "social" | "integrative";
 type ModalStep = "intro" | "activity" | "score" | "complete";
 
-const ageGroupLabels: Record<string, string> = {
-  toddler: "Toddler (2–3)",
-  early_childhood: "Early Childhood (4–6)",
-};
-
-const skillLabels: Record<string, { label: string; icon: typeof Brain; color: string; bg: string }> = {
-  cognitive: { label: "Cognitive", icon: Brain, color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
-  social: { label: "Social", icon: Users, color: "text-green-600", bg: "bg-green-50 border-green-200" },
-  integrative: { label: "Integrative", icon: Heart, color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
-};
-
 // Scoring criteria for each response level
 const SCORE_CRITERIA = [
-  {
-    score: 90,
-    label: "Excellent",
-    description: "Child responded enthusiastically and completed the activity independently with minimal prompting.",
-    color: "text-green-700",
-    bg: "bg-green-50 border-green-300",
-    stars: 5,
-  },
-  {
-    score: 75,
-    label: "Good",
-    description: "Child engaged well and completed most of the activity with occasional guidance.",
-    color: "text-teal-700",
-    bg: "bg-teal-50 border-teal-300",
-    stars: 4,
-  },
-  {
-    score: 60,
-    label: "Developing",
-    description: "Child showed interest but needed frequent prompting or assistance throughout.",
-    color: "text-amber-700",
-    bg: "bg-amber-50 border-amber-300",
-    stars: 3,
-  },
-  {
-    score: 40,
-    label: "Emerging",
-    description: "Child attempted the activity briefly but was easily distracted or resistant.",
-    color: "text-orange-700",
-    bg: "bg-orange-50 border-orange-300",
-    stars: 2,
-  },
-  {
-    score: 20,
-    label: "Needs Support",
-    description: "Child did not engage with the activity today. Try again another time.",
-    color: "text-red-700",
-    bg: "bg-red-50 border-red-300",
-    stars: 1,
-  },
+  { score: 90, stars: 5, color: "text-green-700", bg: "bg-green-50 border-green-300" },
+  { score: 75, stars: 4, color: "text-teal-700", bg: "bg-teal-50 border-teal-300" },
+  { score: 60, stars: 3, color: "text-amber-700", bg: "bg-amber-50 border-amber-300" },
+  { score: 40, stars: 2, color: "text-orange-700", bg: "bg-orange-50 border-orange-300" },
+  { score: 20, stars: 1, color: "text-red-700", bg: "bg-red-50 border-red-300" },
 ];
 
 // Parse module content into intro section and activity section
@@ -113,13 +68,33 @@ export default function Modules() {
   const [skillFilter, setSkillFilter] = useState<SkillCategory>("all");
   const [selectedModuleId, setSelectedModuleId] = useState<number | null>(null);
   const [modalStep, setModalStep] = useState<ModalStep>("intro");
-  const [selectedCriteria, setSelectedCriteria] = useState<typeof SCORE_CRITERIA[0] | null>(null);
+  const [selectedCriteria, setSelectedCriteria] = useState<typeof scoreCriteriaWithLabels[0] | null>(null);
   const [scoreNotes, setScoreNotes] = useState("");
   const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const { t } = useLanguage();
 
   const { data: modules = [], isLoading } = trpc.modules.list.useQuery();
   const { data: children = [] } = trpc.children.list.useQuery();
   const utils = trpc.useUtils();
+
+  const ageGroupLabels: Record<string, string> = {
+    toddler: t.modules.toddler,
+    early_childhood: t.modules.earlyChildhood,
+  };
+
+  const skillLabels: Record<string, { label: string; icon: typeof Brain; color: string; bg: string }> = {
+    cognitive: { label: t.modules.cognitive, icon: Brain, color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+    social: { label: t.modules.social, icon: Users, color: "text-green-600", bg: "bg-green-50 border-green-200" },
+    integrative: { label: t.modules.integrative, icon: Heart, color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
+  };
+
+  const scoreCriteriaWithLabels = [
+    { ...SCORE_CRITERIA[0], label: t.modules.scoreLabels.excellent, description: t.modules.scoreCriteria.excellent },
+    { ...SCORE_CRITERIA[1], label: t.modules.scoreLabels.good, description: t.modules.scoreCriteria.good },
+    { ...SCORE_CRITERIA[2], label: t.modules.scoreLabels.developing, description: t.modules.scoreCriteria.developing },
+    { ...SCORE_CRITERIA[3], label: t.modules.scoreLabels.emerging, description: t.modules.scoreCriteria.emerging },
+    { ...SCORE_CRITERIA[4], label: t.modules.scoreLabels.needsSupport, description: t.modules.scoreCriteria.needsSupport },
+  ];
 
   const recordScore = trpc.progress.record.useMutation({
     onSuccess: () => {
@@ -199,7 +174,7 @@ export default function Modules() {
 
   // Step progress indicator
   const steps: ModalStep[] = ["intro", "activity", "score", "complete"];
-  const stepLabels = ["Overview", "Activity", "Score", "Done"];
+  const stepLabels = [t.modules.overview, t.modules.activity, t.modules.score, t.modules.complete];
   const currentStepIndex = steps.indexOf(modalStep);
 
   return (
@@ -210,10 +185,10 @@ export default function Modules() {
             className="text-3xl font-normal text-foreground mb-2"
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
-            Learning Modules
+            {t.modules.title}
           </h1>
           <p className="text-muted-foreground">
-            Evidence-based coaching activities organized by age group and skill category.
+            {t.modules.subtitle}
           </p>
         </div>
 
@@ -230,7 +205,7 @@ export default function Modules() {
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                {ag === "all" ? "All Ages" : ageGroupLabels[ag]}
+                {ag === "all" ? t.modules.allAges : ageGroupLabels[ag]}
               </button>
             ))}
           </div>
@@ -245,7 +220,7 @@ export default function Modules() {
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                {sk === "all" ? "All Skills" : sk}
+                {sk === "all" ? t.modules.allSkills : skillLabels[sk]?.label ?? sk}
               </button>
             ))}
           </div>
@@ -261,7 +236,8 @@ export default function Modules() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
             <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No modules match your filters.</p>
+            <p className="text-muted-foreground">{t.modules.noModules}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t.modules.noModulesSub}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -283,7 +259,10 @@ export default function Modules() {
                         <Badge variant="outline" className="text-xs">
                           {ageGroupLabels[mod.ageGroup]}
                         </Badge>
-                        <Badge variant="outline" className={`text-xs ${skill.bg} ${skill.color}`}>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${skill.bg} ${skill.color}`}
+                        >
                           {skill.label}
                         </Badge>
                       </div>
@@ -407,7 +386,7 @@ export default function Modules() {
                       <div className="rounded-xl bg-muted/40 border border-border p-4">
                         <div className="flex items-center gap-2 mb-3">
                           <Sparkles className="w-4 h-4 text-primary" />
-                          <span className="text-sm font-semibold text-foreground">Skills You'll Build Together</span>
+                          <span className="text-sm font-semibold text-foreground">{t.modules.skillsBuild}</span>
                         </div>
                         <ul className="space-y-2">
                           {skills.map((skill, i) => (
@@ -424,7 +403,7 @@ export default function Modules() {
                       <div className="flex gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
                         <Lightbulb className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div>
-                          <div className="text-xs font-semibold text-amber-900 mb-1">This Week's Tip</div>
+                          <div className="text-xs font-semibold text-amber-900 mb-1">{t.modules.weeklyTip}</div>
                           <p className="text-xs text-amber-800 leading-relaxed">{activeModule.weeklyTip}</p>
                         </div>
                       </div>
@@ -433,7 +412,7 @@ export default function Modules() {
                     {activeModule.theoreticalFoundations && (
                       <div className="p-3 rounded-xl bg-muted/50 border border-border">
                         <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                          Theoretical Foundations
+                          {t.modules.theoretical}
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">
                           {activeModule.theoreticalFoundations}
@@ -482,7 +461,7 @@ export default function Modules() {
 
                     <div className="flex gap-3 pt-2">
                       <Button variant="outline" className="flex-1" onClick={() => setModalStep("intro")}>
-                        Back
+                        {t.modules.back}
                       </Button>
                       <Button className="flex-1" onClick={() => setModalStep("score")}>
                         Rate Your Child's Response
@@ -502,10 +481,10 @@ export default function Modules() {
 
                     {/* Child selector */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Select Child</Label>
+                      <Label className="text-sm font-medium">{t.modules.selectChild}</Label>
                       <Select value={selectedChildId} onValueChange={setSelectedChildId}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Choose a child profile" />
+                          <SelectValue placeholder={t.modules.selectChildSub} />
                         </SelectTrigger>
                         <SelectContent>
                           {children.map((c) => (
@@ -519,7 +498,7 @@ export default function Modules() {
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Response Level</Label>
                       <div className="space-y-2">
-                        {SCORE_CRITERIA.map((criteria) => (
+                        {scoreCriteriaWithLabels.map((criteria) => (
                           <button
                             key={criteria.score}
                             onClick={() => setSelectedCriteria(criteria)}
@@ -556,9 +535,9 @@ export default function Modules() {
 
                     {/* Notes */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Notes <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                      <Label className="text-sm font-medium">{t.modules.notes}</Label>
                       <Textarea
-                        placeholder="Any observations about today's session? What worked well? What was challenging?"
+                        placeholder={t.modules.notesPlaceholder}
                         value={scoreNotes}
                         onChange={(e) => setScoreNotes(e.target.value)}
                         className="resize-none text-sm"
@@ -568,14 +547,14 @@ export default function Modules() {
 
                     <div className="flex gap-3">
                       <Button variant="outline" className="flex-1" onClick={() => setModalStep("activity")}>
-                        Back
+                        {t.modules.back}
                       </Button>
                       <Button
                         className="flex-1"
                         onClick={handleSaveScore}
                         disabled={recordScore.isPending || !selectedChildId || !selectedCriteria}
                       >
-                        {recordScore.isPending ? "Saving..." : "Save & Finish"}
+                        {recordScore.isPending ? t.modules.saving : t.modules.saveScore}
                         <CheckCircle2 className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
@@ -593,10 +572,10 @@ export default function Modules() {
                         className="text-2xl font-normal text-foreground mb-2"
                         style={{ fontFamily: "'DM Serif Display', serif" }}
                       >
-                        Activity Complete!
+                        {t.modules.moduleComplete}
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-                        Great job! Your child's score has been recorded. Consistency is key — keep up the wonderful work.
+                        {t.modules.moduleCompleteSub}
                       </p>
                     </div>
 
@@ -620,16 +599,16 @@ export default function Modules() {
                       {nextModule ? (
                         <>
                           <Button className="w-full overflow-hidden" onClick={handleNextModule}>
-                            <span className="truncate min-w-0 flex-1 text-left">Next: {nextModule.title}</span>
+                            <span className="truncate min-w-0 flex-1 text-left">{t.modules.nextModule}: {nextModule.title}</span>
                             <ArrowRight className="w-4 h-4 ml-2 flex-shrink-0" />
                           </Button>
                           <Button variant="outline" className="w-full" onClick={handleCloseModal}>
-                            Close & Return to Modules
+                            {t.modules.close}
                           </Button>
                         </>
                       ) : (
                         <Button className="w-full" onClick={handleCloseModal}>
-                          Return to Modules
+                          {t.modules.close}
                         </Button>
                       )}
                     </div>

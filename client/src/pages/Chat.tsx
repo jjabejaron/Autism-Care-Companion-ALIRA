@@ -1,5 +1,6 @@
 import AppShell from "@/components/AppShell";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ export default function Chat() {
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLanguage();
 
   const { data: history = [], isLoading } = trpc.chat.history.useQuery();
   const utils = trpc.useUtils();
@@ -95,7 +97,7 @@ export default function Chat() {
             <div className="font-semibold text-foreground">ALI</div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              Autism Care Companion · Always available
+              {t.chat.subtitle}
             </div>
           </div>
         </div>
@@ -111,10 +113,7 @@ export default function Chat() {
                 </div>
                 <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3 max-w-lg">
                   <p className="text-sm text-foreground leading-relaxed">
-                    Magandang araw! I'm <strong>ALI</strong>, your Autism Care Companion. I'm here to support you as a parent or guardian of a child with autism.
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    You can ask me about therapies, daily routines, behavior strategies, learning activities, or anything related to autism care. How can I help you today?
+                    {t.chat.welcome}
                   </p>
                 </div>
               </div>
@@ -192,7 +191,7 @@ export default function Chat() {
           <div className="max-w-2xl mx-auto flex gap-3">
             <Input
               ref={inputRef}
-              placeholder="Ask ALI anything about autism care..."
+              placeholder={t.chat.placeholder}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

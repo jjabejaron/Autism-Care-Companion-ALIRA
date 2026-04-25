@@ -12,6 +12,7 @@ import {
 import { MapView } from "@/components/Map";
 import AppShell from "@/components/AppShell";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   AlertCircle,
   Building2,
@@ -47,6 +48,7 @@ export default function Clinics() {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const { t } = useLanguage();
 
   // Contact / QR modal state
   const [contactClinic, setContactClinic] = useState<ClinicResult | null>(null);
@@ -225,10 +227,10 @@ export default function Clinics() {
                 className="text-2xl font-normal text-foreground"
                 style={{ fontFamily: "'DM Serif Display', serif" }}
               >
-                Nearby Clinics
+                {t.clinics.title}
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Find autism-specialized clinics and therapy centers in the Philippines.
+                {t.clinics.subtitle}
               </p>
             </div>
             <div className="flex gap-2">
@@ -240,7 +242,7 @@ export default function Clinics() {
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                <Map className="w-4 h-4" /> Map
+                <Map className="w-4 h-4" /> {t.clinics.map}
               </button>
               <button
                 onClick={() => setView("list")}
@@ -250,7 +252,7 @@ export default function Clinics() {
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                <List className="w-4 h-4" /> List
+                <List className="w-4 h-4" /> {t.clinics.list}
               </button>
             </div>
           </div>
@@ -259,14 +261,14 @@ export default function Clinics() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search by city or area (e.g., Quezon City, Makati)"
+                placeholder={t.clinics.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
               />
             </div>
             <Button type="submit" disabled={isSearching}>
-              {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Search"}
+              {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : t.clinics.search}
             </Button>
           </form>
         </div>
@@ -320,7 +322,7 @@ export default function Clinics() {
                                   : "text-red-600 border-red-200 bg-red-50"
                               }`}
                             >
-                              {isClinicOpen(selectedClinic) ? "Open" : "Closed"}
+                              {isClinicOpen(selectedClinic) ? t.clinics.open : t.clinics.closed}
                             </Badge>
                           )}
                         </div>
@@ -333,7 +335,7 @@ export default function Clinics() {
                           onClick={() => getDirections(selectedClinic)}
                         >
                           <Navigation className="w-3.5 h-3.5 mr-1" />
-                          Directions
+                          {t.clinics.directions}
                         </Button>
                         <Button
                           size="sm"
@@ -341,7 +343,7 @@ export default function Clinics() {
                           onClick={(e) => handleContact(selectedClinic, e)}
                         >
                           <Phone className="w-3.5 h-3.5 mr-1" />
-                          Contact
+                          {t.clinics.contact}
                         </Button>
                       </div>
                     </CardContent>
@@ -356,9 +358,12 @@ export default function Clinics() {
                   <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
                     {isSearching
-                      ? "Searching for clinics..."
-                      : "Search for clinics to see results here."}
+                      ? t.common.loading
+                      : t.clinics.noResults}
                   </p>
+                  {!isSearching && (
+                    <p className="text-sm text-muted-foreground mt-1">{t.clinics.noResultsSub}</p>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3 max-w-2xl mx-auto">
@@ -412,7 +417,7 @@ export default function Clinics() {
                                       : "text-red-600 border-red-200 bg-red-50"
                                   }`}
                                 >
-                                  {isClinicOpen(clinic) ? "Open Now" : "Closed"}
+                                  {isClinicOpen(clinic) ? t.clinics.open : t.clinics.closed}
                                 </Badge>
                               )}
                             </div>
@@ -428,7 +433,7 @@ export default function Clinics() {
                               onClick={() => getDirections(clinic)}
                             >
                               <Navigation className="w-3 h-3 mr-1" />
-                              Directions
+                              {t.clinics.directions}
                             </Button>
                             <Button
                               size="sm"
@@ -436,7 +441,7 @@ export default function Clinics() {
                               onClick={(e) => handleContact(clinic, e)}
                             >
                               <Phone className="w-3 h-3 mr-1" />
-                              Contact
+                              {t.clinics.contact}
                             </Button>
                           </div>
                         </div>
@@ -463,7 +468,7 @@ export default function Clinics() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-primary" />
-                  Contact Clinic
+                  {t.clinics.contact}
                 </DialogTitle>
                 <DialogDescription>
                   <span className="font-medium text-foreground">{contactClinic?.name}</span>
@@ -476,19 +481,17 @@ export default function Clinics() {
               <div className="flex gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
                 <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-800">
-                  <span className="font-semibold">Disclaimer:</span> ALIRA does not directly book
-                  appointments with clinics. We help you find the nearest options and generate a QR
-                  code with your child's demographics to speed up registration when you visit.
+                  {t.clinics.disclaimer}
                 </p>
               </div>
 
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">
-                  Select which child will visit this clinic:
+                  {t.clinics.selectChildSub} {contactClinic?.name}:
                 </p>
                 {children.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    No child profiles found. Please add a child profile first.
+                    {t.clinics.noChildren}
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -531,7 +534,7 @@ export default function Clinics() {
 
               <div className="flex gap-3 pt-2">
                 <Button variant="outline" className="flex-1" onClick={handleCloseModal}>
-                  Cancel
+                  {t.common.cancel}
                 </Button>
                 <Button
                   className="flex-1"
@@ -539,7 +542,7 @@ export default function Clinics() {
                   onClick={handleGenerateQR}
                 >
                   <QrCode className="w-4 h-4 mr-2" />
-                  Generate QR Code
+                  {t.clinics.generateQR}
                 </Button>
               </div>
             </>
@@ -550,12 +553,11 @@ export default function Clinics() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <QrCode className="w-5 h-5 text-primary" />
-                  Child Demographics QR Code
+                  {t.clinics.referralCard}
                 </DialogTitle>
                 <DialogDescription>
-                  Show this QR code at{" "}
-                  <span className="font-medium text-foreground">{contactClinic.name}</span> to
-                  quickly share your child's information.
+                  {t.clinics.scanInstruction}{" "}
+                  <span className="font-medium text-foreground">{contactClinic.name}</span>
                 </DialogDescription>
               </DialogHeader>
 
@@ -604,7 +606,7 @@ export default function Clinics() {
                   <div className="flex gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200">
                     <AlertCircle className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-blue-800">
-                      Scan at the clinic's reception to share demographics. ALIRA does not directly book appointments.
+                      {t.clinics.disclaimer}
                     </p>
                   </div>
                 </div>
@@ -616,14 +618,14 @@ export default function Clinics() {
                   className="flex-1"
                   onClick={() => setModalStep("select-child")}
                 >
-                  Back
+                  {t.modules.back}
                 </Button>
                 <Button variant="outline" className="flex-1" onClick={handleDownloadQR}>
                   <Download className="w-4 h-4 mr-2" />
-                  Save QR
+                  {t.clinics.downloadQR}
                 </Button>
                 <Button className="flex-1" onClick={handleCloseModal}>
-                  Done
+                  {t.common.confirm}
                 </Button>
               </div>
             </>

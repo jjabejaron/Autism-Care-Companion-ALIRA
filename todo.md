@@ -91,3 +91,14 @@
 - [x] Mark individual or all notifications as read from the pop-up panel
 - [x] Update Settings notifications section to remove Appointment Reminders, add Progress Alerts + Module Completion toggles
 - [x] Auto-create notification when a score is recorded in the Modules flow
+
+## Phase 17: Global Language Switching (i18n)
+- [x] Create LanguageContext with English/Filipino translations
+- [x] Wire LanguageContext to user's saved language preference from DB
+- [x] Apply translations to AppShell sidebar nav labels
+- [x] Apply translations to Dashboard, Modules, Progress, Clinics, Chat, Settings pages
+- [x] Language change in Settings wires to global LanguageContext (app-wide instant update)
+
+## Phase 17b: i18n Completion & DB Persistence
+- [x] Persist language selection to DB via user.updateProfile mutation in LanguageContext
+- [x] Ensure auth.me returns the saved language field from DB for hydration on reload (language column in users table, synced via useEffect)

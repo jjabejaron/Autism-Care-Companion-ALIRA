@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Activity,
   Bell,
@@ -18,16 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "wouter";
-
-const NAV_ITEMS = [
-  { path: "/dashboard", icon: Home, label: "Dashboard" },
-  { path: "/modules", icon: BookOpen, label: "Modules" },
-  { path: "/progress", icon: Activity, label: "Progress" },
-  { path: "/clinics", icon: MapPin, label: "Clinics" },
-  { path: "/chat", icon: MessageCircle, label: "ALI Chat" },
-  { path: "/settings", icon: Settings, label: "Settings" },
-];
+import { useLocation } from "wouter";
 
 function NotificationPanel({
   notifications,
@@ -138,6 +130,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+
+  const NAV_ITEMS = [
+    { path: "/dashboard", icon: Home, label: t.nav.dashboard },
+    { path: "/modules", icon: BookOpen, label: t.nav.modules },
+    { path: "/progress", icon: Activity, label: t.nav.progress },
+    { path: "/clinics", icon: MapPin, label: t.nav.clinics },
+    { path: "/chat", icon: MessageCircle, label: t.nav.aliChat },
+    { path: "/settings", icon: Settings, label: t.nav.settings },
+  ];
 
   const { data: notifications = [] } = trpc.notifications.list.useQuery(
     undefined,
@@ -171,7 +173,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
-          <p className="text-sm text-muted-foreground">Loading ALIRA...</p>
+          <p className="text-sm text-muted-foreground">{t.common.loading}</p>
         </div>
       </div>
     );
@@ -217,7 +219,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <div>
           <div className="font-bold text-foreground text-sm tracking-wide">ALIRA</div>
-          <div className="text-xs text-muted-foreground leading-none">Care Companion</div>
+          <div className="text-xs text-muted-foreground leading-none">{t.nav.careCompanion}</div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import AppShell from "@/components/AppShell";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -26,6 +27,7 @@ export default function Dashboard() {
   const [, navigate] = useLocation();
   const [selectedChildIndex, setSelectedChildIndex] = useState(0);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<number>>(new Set());
+  const { t } = useLanguage();
 
   const { data: children = [] } = trpc.children.list.useQuery();
   const selectedChild = children[selectedChildIndex];
@@ -58,9 +60,9 @@ export default function Dashboard() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-normal text-foreground" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              Good day, {user?.name?.split(" ")[0] ?? "Parent"} 👋
+              {t.dashboard.greeting}, {user?.name?.split(" ")[0] ?? "Parent"} 👋
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Here's an overview of your child's care journey.</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{t.dashboard.subtitle}</p>
           </div>
           {unreadCount > 0 && (
             <Badge className="bg-primary/10 text-primary border-primary/20">
@@ -93,7 +95,7 @@ export default function Dashboard() {
               onClick={() => navigate("/onboarding")}
               className="flex items-center gap-1 px-3 py-2 rounded-full text-xs text-muted-foreground hover:text-foreground border border-dashed border-border hover:border-primary/40 transition-colors"
             >
-              + Add Child
+              {t.dashboard.addChildTab}
             </button>
           </div>
         )}
@@ -108,10 +110,7 @@ export default function Dashboard() {
             <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm font-medium text-amber-900">
-                {selectedChild.name} is not yet clinically diagnosed
-              </p>
-              <p className="text-sm text-amber-700 mt-1">
-                We recommend scheduling an appointment with an autism specialist for a proper assessment.
+                {selectedChild.name} {t.dashboard.alertMsg}
               </p>
               <div className="flex gap-3 mt-3">
                 <Button
@@ -119,7 +118,7 @@ export default function Dashboard() {
                   className="bg-amber-600 text-white hover:bg-amber-700 h-8 text-xs"
                   onClick={() => navigate("/clinics")}
                 >
-                  Find a Clinic
+                  {t.dashboard.findClinicBtn}
                 </Button>
                 <Button
                   size="sm"
@@ -127,7 +126,7 @@ export default function Dashboard() {
                   className="h-8 text-xs text-amber-700 hover:text-amber-900"
                   onClick={() => dismissAlert(selectedChild.id)}
                 >
-                  Not Now
+                  {t.dashboard.dismiss}
                 </Button>
               </div>
             </div>
@@ -145,9 +144,9 @@ export default function Dashboard() {
           <Card className="border-border">
             <CardContent className="py-12 text-center">
               <Baby className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">No child profiles yet</h3>
-              <p className="text-muted-foreground text-sm mb-6">Add your child's profile to get started with ALIRA.</p>
-              <Button onClick={() => navigate("/onboarding")}>Add Child Profile</Button>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t.dashboard.noChildren}</h3>
+              <p className="text-muted-foreground text-sm mb-6">{t.dashboard.noChildrenSub}</p>
+              <Button onClick={() => navigate("/onboarding")}>{t.dashboard.addChild}</Button>
             </CardContent>
           </Card>
         )}
@@ -157,29 +156,29 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               icon={<Activity className="w-5 h-5 text-primary" />}
-              label="Avg. Activity Score"
+              label={t.dashboard.avgScore}
               value={avgScore > 0 ? `${avgScore}%` : "—"}
               sub={`${recentScores.length} activities completed`}
               color="bg-primary/8"
             />
             <StatCard
               icon={<BookOpen className="w-5 h-5 text-blue-600" />}
-              label="Modules Available"
+              label={t.dashboard.modulesAvail}
               value="6"
               sub="Across 2 age groups"
               color="bg-blue-50"
             />
             <StatCard
               icon={<MapPin className="w-5 h-5 text-teal-600" />}
-              label="Nearby Clinics"
-              value="Find"
+              label={t.clinics.title}
+              value={t.dashboard.findClinicBtn}
               sub="Search autism specialists"
               color="bg-teal-50"
             />
             <StatCard
               icon={<Heart className="w-5 h-5 text-rose-600" />}
-              label="Child Profile"
-              value={selectedChild.isClinicallyDiagnosed ? "Diagnosed" : "Undiagnosed"}
+              label={t.dashboard.diagnosisStatus}
+              value={selectedChild.isClinicallyDiagnosed ? t.dashboard.diagnosed : t.dashboard.notDiagnosed}
               sub={`Age ${selectedChild.age}`}
               color="bg-rose-50"
             />
@@ -192,12 +191,12 @@ export default function Dashboard() {
           <Card className="border-border">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
+                <CardTitle className="text-base font-semibold">{t.dashboard.recentActivity}</CardTitle>
                 <button
                   onClick={() => navigate("/progress")}
                   className="text-xs text-primary hover:underline flex items-center gap-1"
                 >
-                  View all <ChevronRight className="w-3 h-3" />
+                  {t.dashboard.viewAll} <ChevronRight className="w-3 h-3" />
                 </button>
               </div>
             </CardHeader>
@@ -205,12 +204,12 @@ export default function Dashboard() {
               {recentScores.length === 0 ? (
                 <div className="text-center py-6">
                   <TrendingUp className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No activity scores yet</p>
+                  <p className="text-sm text-muted-foreground">{t.dashboard.noActivity}</p>
                   <button
                     onClick={() => navigate("/modules")}
                     className="text-xs text-primary hover:underline mt-2"
                   >
-                    Start a module →
+                    {t.dashboard.startModule}
                   </button>
                 </div>
               ) : (
@@ -240,24 +239,24 @@ export default function Dashboard() {
           <Card className="border-border">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold">Find a Nearby Clinic</CardTitle>
+                <CardTitle className="text-base font-semibold">{t.dashboard.findClinic}</CardTitle>
                 <button
                   onClick={() => navigate("/clinics")}
                   className="text-xs text-primary hover:underline flex items-center gap-1"
                 >
-                  View all <ChevronRight className="w-3 h-3" />
+                  {t.dashboard.viewAll} <ChevronRight className="w-3 h-3" />
                 </button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-center py-6">
                 <MapPin className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Discover autism-specialized clinics and therapy centers near you in the Philippines.</p>
+                <p className="text-sm text-muted-foreground">{t.dashboard.findClinicSub}</p>
                 <button
                   onClick={() => navigate("/clinics")}
                   className="text-xs text-primary hover:underline mt-2"
                 >
-                  Search clinics →
+                  {t.dashboard.searchClinics} →
                 </button>
               </div>
             </CardContent>
@@ -267,11 +266,11 @@ export default function Dashboard() {
         {/* Quick nav cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { icon: BookOpen, label: "Modules", path: "/modules", color: "text-blue-600 bg-blue-50" },
-            { icon: TrendingUp, label: "Progress", path: "/progress", color: "text-green-600 bg-green-50" },
-            { icon: MapPin, label: "Clinics", path: "/clinics", color: "text-teal-600 bg-teal-50" },
-            { icon: MessageCircle, label: "Talk to ALI", path: "/chat", color: "text-primary bg-primary/10" },
-            { icon: Settings, label: "Settings", path: "/settings", color: "text-gray-600 bg-gray-50" },
+            { icon: BookOpen, label: t.nav.modules, path: "/modules", color: "text-blue-600 bg-blue-50" },
+            { icon: TrendingUp, label: t.nav.progress, path: "/progress", color: "text-green-600 bg-green-50" },
+            { icon: MapPin, label: t.nav.clinics, path: "/clinics", color: "text-teal-600 bg-teal-50" },
+            { icon: MessageCircle, label: t.nav.aliChat, path: "/chat", color: "text-primary bg-primary/10" },
+            { icon: Settings, label: t.nav.settings, path: "/settings", color: "text-gray-600 bg-gray-50" },
           ].map((item) => (
             <button
               key={item.path}
