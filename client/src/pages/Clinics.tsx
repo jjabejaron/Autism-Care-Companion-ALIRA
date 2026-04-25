@@ -455,7 +455,7 @@ export default function Clinics() {
           if (!open) handleCloseModal();
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           {modalStep === "select-child" && (
             <>
               <DialogHeader>
@@ -557,60 +557,54 @@ export default function Clinics() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="flex flex-col items-center gap-4">
+              {/* Side-by-side layout: QR left, info right */}
+              <div className="flex gap-5 items-start">
                 {/* QR Code */}
-                <div className="p-4 bg-white rounded-2xl border border-border shadow-sm">
+                <div className="flex-shrink-0 p-3 bg-white rounded-2xl border border-border shadow-sm">
                   <QRCodeSVG
                     id="alira-qr-code"
                     value={qrData}
-                    size={200}
+                    size={160}
                     level="M"
                     includeMargin
                   />
                 </div>
 
-                {/* Child info summary */}
-                <div className="w-full rounded-xl bg-muted/50 p-4 space-y-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    Child Information
-                  </p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                    <span className="text-muted-foreground">Name</span>
-                    <span className="font-medium text-foreground">{selectedChild.name}</span>
-                    <span className="text-muted-foreground">Age</span>
-                    <span className="font-medium text-foreground">
-                      {selectedChild.age} years old
-                    </span>
-                    <span className="text-muted-foreground">Birthdate</span>
-                    <span className="font-medium text-foreground">
-                      {selectedChild.birthdate
-                        ? new Date(selectedChild.birthdate).toLocaleDateString("en-PH")
-                        : "N/A"}
-                    </span>
-                    <span className="text-muted-foreground">Gender</span>
-                    <span className="font-medium text-foreground capitalize">
-                      {selectedChild.gender}
-                    </span>
-                    <span className="text-muted-foreground">Clinically Diagnosed</span>
-                    <span
-                      className={`font-medium ${
-                        selectedChild.isClinicallyDiagnosed
-                          ? "text-green-600"
-                          : "text-amber-600"
-                      }`}
-                    >
-                      {selectedChild.isClinicallyDiagnosed ? "Yes" : "No"}
-                    </span>
+                {/* Child info + disclaimer */}
+                <div className="flex-1 min-w-0 space-y-3">
+                  <div className="rounded-xl bg-muted/50 p-3 space-y-1.5">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Child Information
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                      <span className="text-muted-foreground">Name</span>
+                      <span className="font-medium text-foreground truncate">{selectedChild.name}</span>
+                      <span className="text-muted-foreground">Age</span>
+                      <span className="font-medium text-foreground">{selectedChild.age} yrs</span>
+                      <span className="text-muted-foreground">Birthdate</span>
+                      <span className="font-medium text-foreground">
+                        {selectedChild.birthdate
+                          ? new Date(selectedChild.birthdate).toLocaleDateString("en-PH")
+                          : "N/A"}
+                      </span>
+                      <span className="text-muted-foreground">Gender</span>
+                      <span className="font-medium text-foreground capitalize">{selectedChild.gender}</span>
+                      <span className="text-muted-foreground">Diagnosed</span>
+                      <span className={`font-medium ${
+                        selectedChild.isClinicallyDiagnosed ? "text-green-600" : "text-amber-600"
+                      }`}>
+                        {selectedChild.isClinicallyDiagnosed ? "Yes" : "No"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Disclaimer */}
-                <div className="flex gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200 w-full">
-                  <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-blue-800">
-                    Scan this QR code at the clinic's reception to share your child's demographics
-                    and avoid lengthy data entry. ALIRA does not directly book appointments.
-                  </p>
+                  {/* Disclaimer */}
+                  <div className="flex gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200">
+                    <AlertCircle className="w-3.5 h-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-blue-800">
+                      Scan at the clinic's reception to share demographics. ALIRA does not directly book appointments.
+                    </p>
+                  </div>
                 </div>
               </div>
 
