@@ -23,11 +23,22 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   }
 };
 
+// Expected user-facing error codes that should NOT be logged as console errors
+const EXPECTED_ERROR_CODES = new Set(["CONFLICT", "UNAUTHORIZED", "BAD_REQUEST", "FORBIDDEN"]);
+
+const isExpectedError = (error: unknown): boolean => {
+  if (!(error instanceof TRPCClientError)) return false;
+  const code = (error.data as { code?: string } | undefined)?.code;
+  return code ? EXPECTED_ERROR_CODES.has(code) : false;
+};
+
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Query Error]", error);
+    if (!isExpectedError(error)) {
+      console.error("[API Query Error]", error);
+    }
   }
 });
 
@@ -35,7 +46,9 @@ queryClient.getMutationCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.mutation.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Mutation Error]", error);
+    if (!isExpectedError(error)) {
+      console.error("[API Mutation Error]", error);
+    }
   }
 });
 

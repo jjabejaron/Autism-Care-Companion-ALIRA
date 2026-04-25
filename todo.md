@@ -78,3 +78,8 @@
 - [x] Redirect authenticated users from /login and /signup to /dashboard
 - [x] Update AppShell to use custom auth instead of Manus OAuth
 - [x] Update Home landing page buttons to link to /signup and /login
+
+## Phase 14: Error Handling Fixes
+- [x] Suppress console noise for expected TRPC validation errors (duplicate email, wrong password)
+- [x] Show inline "already registered" message with a direct link to /login on SignUp page
+- [x] Show inline "wrong credentials" message on Login page

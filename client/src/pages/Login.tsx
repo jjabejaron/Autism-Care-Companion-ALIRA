@@ -24,20 +24,23 @@ export default function Login() {
   }, [isAuthenticated, loading, navigate]);
 
   const utils = trpc.useUtils();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: async () => {
+      setErrorMsg(null);
       await utils.auth.me.invalidate();
       toast.success("Welcome back to ALIRA!");
       navigate("/dashboard");
     },
     onError: (err) => {
-      toast.error(err.message || "Login failed. Please check your credentials.");
+      setErrorMsg("Invalid email or password. Please try again.");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     loginMutation.mutate({ email: form.email, password: form.password });
   };
 
@@ -120,6 +123,13 @@ export default function Login() {
           <Card className="border-border/50 shadow-lg shadow-black/5">
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Inline error banner */}
+                {errorMsg && (
+                  <div className="rounded-xl p-3.5 text-sm" style={{ background: "#fef2f2", border: "1px solid #fecaca" }}>
+                    <p className="font-medium" style={{ color: "#dc2626" }}>{errorMsg}</p>
+                  </div>
+                )}
+
                 {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium text-foreground">Email Address</Label>

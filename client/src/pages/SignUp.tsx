@@ -31,26 +31,35 @@ export default function SignUp() {
   });
 
   const utils = trpc.useUtils();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isDuplicate, setIsDuplicate] = useState(false);
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: async () => {
+      setErrorMsg(null);
+      setIsDuplicate(false);
       await utils.auth.me.invalidate();
       toast.success("Welcome to ALIRA! Let's set up your profile.");
       navigate("/onboarding");
     },
     onError: (err) => {
-      toast.error(err.message || "Registration failed. Please try again.");
+      const isDupe = err.message?.toLowerCase().includes("already exists") ||
+        (err.data as { code?: string } | undefined)?.code === "CONFLICT";
+      setIsDuplicate(isDupe);
+      setErrorMsg(err.message || "Registration failed. Please try again.");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setIsDuplicate(false);
     if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match.");
+      setErrorMsg("Passwords do not match.");
       return;
     }
     if (form.password.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+      setErrorMsg("Password must be at least 8 characters.");
       return;
     }
     registerMutation.mutate({
@@ -135,6 +144,27 @@ export default function SignUp() {
           <Card className="border-border/50 shadow-lg shadow-black/5">
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Inline error banner */}
+                {errorMsg && (
+                  <div className="rounded-xl p-3.5 text-sm" style={{ background: "#fef2f2", border: "1px solid #fecaca" }}>
+                    <p className="font-medium" style={{ color: "#dc2626" }}>
+                      {isDuplicate ? "This email is already registered." : errorMsg}
+                    </p>
+                    {isDuplicate && (
+                      <p className="mt-1" style={{ color: "#dc2626" }}>
+                        <button
+                          type="button"
+                          onClick={() => navigate("/login")}
+                          className="underline font-medium hover:opacity-80"
+                        >
+                          Sign in instead
+                        </button>
+                        {" "}or use a different email address.
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className="text-sm font-medium text-foreground">Full Name</Label>
