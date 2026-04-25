@@ -1,6 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,12 +66,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <p className="text-muted-foreground text-sm mb-6">
             Please sign in to access your autism care companion.
           </p>
-          <a href={getLoginUrl()}>
-            <Button className="w-full">
+          <div className="flex flex-col gap-3">
+            <Button className="w-full" onClick={() => navigate("/login")}>
               <LogIn className="w-4 h-4 mr-2" />
               Sign In
             </Button>
-          </a>
+            <Button variant="outline" className="w-full" onClick={() => navigate("/signup")}>
+              Create Account
+            </Button>
+          </div>
         </div>
       </div>
     );

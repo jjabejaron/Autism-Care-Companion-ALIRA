@@ -14,11 +14,15 @@ import Appointments from "./pages/Appointments";
 import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/signup" component={SignUp} />
+      <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/modules" component={Modules} />

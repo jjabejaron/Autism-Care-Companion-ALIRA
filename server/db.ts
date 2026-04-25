@@ -91,6 +91,34 @@ export async function getUserById(id: number): Promise<User | undefined> {
   return result[0];
 }
 
+export async function getUserByEmail(email: string): Promise<User | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result[0];
+}
+
+export async function createLocalUser(data: {
+  email: string;
+  passwordHash: string;
+  fullName: string;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  // Use email as the openId for local accounts (prefixed to avoid collision)
+  const openId = `local:${data.email}`;
+  const result = await db.insert(users).values({
+    openId,
+    email: data.email,
+    name: data.fullName,
+    fullName: data.fullName,
+    passwordHash: data.passwordHash,
+    loginMethod: "email",
+    lastSignedIn: new Date(),
+  });
+  return (result[0] as { insertId: number }).insertId;
+}
+
 export async function updateUserProfile(
   id: number,
   data: Partial<Pick<User, "fullName" | "email" | "phone" | "address" | "birthdate" | "language" | "passwordHash">>

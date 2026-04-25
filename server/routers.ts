@@ -11,6 +11,7 @@ import {
   createActivityScore,
   createAppointment,
   createChild,
+  createLocalUser,
   createNotification,
   deleteChild,
   getAllActivityScores,
@@ -27,6 +28,7 @@ import {
   getModuleById,
   getModuleCount,
   getNotificationsByUserId,
+  getUserByEmail,
   getUserById,
   markAllNotificationsRead,
   markNotificationRead,
@@ -47,6 +49,83 @@ export const appRouter = router({
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
+
+    register: publicProcedure
+      .input(
+        z.object({
+          fullName: z.string().min(2, "Full name must be at least 2 characters"),
+          email: z.string().email("Please enter a valid email address"),
+          password: z.string().min(8, "Password must be at least 8 characters"),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        // Check if email already exists
+        const existing = await getUserByEmail(input.email);
+        if (existing) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "An account with this email already exists.",
+          });
+        }
+        // Hash password
+        const passwordHash = await bcrypt.hash(input.password, 12);
+        // Create user
+        const userId = await createLocalUser({
+          email: input.email,
+          passwordHash,
+          fullName: input.fullName,
+        });
+        // Fetch the created user
+        const user = await getUserById(userId);
+        if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create account." });
+        // Create session token using the user's openId
+        const { sdk } = await import("./_core/sdk");
+        const { ONE_YEAR_MS } = await import("../shared/const");
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.fullName || user.name || input.email,
+          expiresInMs: ONE_YEAR_MS,
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true, user: { id: user.id, email: user.email, fullName: user.fullName } };
+      }),
+
+    login: publicProcedure
+      .input(
+        z.object({
+          email: z.string().email("Please enter a valid email address"),
+          password: z.string().min(1, "Password is required"),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        // Find user by email
+        const user = await getUserByEmail(input.email);
+        if (!user || !user.passwordHash) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid email or password.",
+          });
+        }
+        // Verify password
+        const valid = await bcrypt.compare(input.password, user.passwordHash);
+        if (!valid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid email or password.",
+          });
+        }
+        // Create session token
+        const { sdk } = await import("./_core/sdk");
+        const { ONE_YEAR_MS } = await import("../shared/const");
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.fullName || user.name || input.email,
+          expiresInMs: ONE_YEAR_MS,
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true, user: { id: user.id, email: user.email, fullName: user.fullName } };
+      }),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

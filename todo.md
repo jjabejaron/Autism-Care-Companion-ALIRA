@@ -66,3 +66,15 @@
 ## Phase 12: Testing
 - [x] 14 vitest tests passing (auth, children, modules, progress, appointments, notifications, admin, chat, user)
 - [x] Zero TypeScript errors
+
+## Phase 13: Custom Email/Password Authentication
+- [x] Add passwordHash column to users table (migration)
+- [x] Backend: auth.register procedure (email, password, fullName)
+- [x] Backend: auth.login procedure (email, password → JWT session cookie)
+- [x] Backend: auth.logout clears session cookie
+- [x] Sign Up page (full name, email, password, confirm password)
+- [x] Login page (email, password, forgot password link)
+- [x] Protect all app routes — redirect to /login if not authenticated
+- [x] Redirect authenticated users from /login and /signup to /dashboard
+- [x] Update AppShell to use custom auth instead of Manus OAuth
+- [x] Update Home landing page buttons to link to /signup and /login

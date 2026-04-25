@@ -1,6 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { getLoginUrl } from "@/const";
 import { motion } from "framer-motion";
 import { Brain, Calendar, Heart, MapPin, MessageCircle, Shield, Sparkles, Users } from "lucide-react";
 import { useEffect } from "react";
@@ -76,16 +75,12 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <a href={getLoginUrl()}>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                Sign In
-              </Button>
-            </a>
-            <a href={getLoginUrl()}>
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Get Started
-              </Button>
-            </a>
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => navigate("/login")}>
+              Sign In
+            </Button>
+            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/signup")}>
+              Get Started
+            </Button>
           </div>
         </div>
       </nav>
@@ -122,16 +117,12 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href={getLoginUrl()}>
-                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-base">
-                    Start Your Journey
-                  </Button>
-                </a>
-                <a href={getLoginUrl()}>
-                  <Button size="lg" variant="outline" className="px-8 h-12 text-base border-border">
-                    Sign In
-                  </Button>
-                </a>
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-base" onClick={() => navigate("/signup")}>
+                  Start Your Journey
+                </Button>
+                <Button size="lg" variant="outline" className="px-8 h-12 text-base border-border" onClick={() => navigate("/login")}>
+                  Sign In
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -271,11 +262,9 @@ export default function Home() {
             <p className="text-muted-foreground mb-8 leading-relaxed">
               Join families across the Philippines who are using ALIRA to support their children's growth and development with confidence.
             </p>
-            <a href={getLoginUrl()}>
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-12 text-base">
-                Create Your Free Account
-              </Button>
-            </a>
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-12 text-base" onClick={() => navigate("/signup")}>
+              Create Your Free Account
+            </Button>
           </div>
         </div>
       </section>
