@@ -10,7 +10,6 @@ import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
 import Progress from "./pages/Progress";
 import Clinics from "./pages/Clinics";
-import Appointments from "./pages/Appointments";
 import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
@@ -28,7 +27,6 @@ function Router() {
       <Route path="/modules" component={Modules} />
       <Route path="/progress" component={Progress} />
       <Route path="/clinics" component={Clinics} />
-      <Route path="/appointments" component={Appointments} />
       <Route path="/chat" component={Chat} />
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />

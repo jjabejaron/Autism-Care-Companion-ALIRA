@@ -6,7 +6,6 @@ import {
   Activity,
   Bell,
   BookOpen,
-  Calendar,
   Home,
   LogIn,
   MapPin,
@@ -24,7 +23,6 @@ const NAV_ITEMS = [
   { path: "/modules", icon: BookOpen, label: "Modules" },
   { path: "/progress", icon: Activity, label: "Progress" },
   { path: "/clinics", icon: MapPin, label: "Clinics" },
-  { path: "/appointments", icon: Calendar, label: "Appointments" },
   { path: "/chat", icon: MessageCircle, label: "ALI Chat" },
   { path: "/settings", icon: Settings, label: "Settings" },
 ];
