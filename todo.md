@@ -85,11 +85,11 @@
 - [x] Show inline "wrong credentials" message on Login page
 
 ## Phase 15: Clinic Contact + QR Code Redesign
-- [ ] Remove Appointments from sidebar navigation in AppShell
-- [ ] Remove "Upcoming Appointments" card from Dashboard
-- [ ] Remove /appointments route from App.tsx
-- [ ] Add "Contact" button to each clinic card in Clinics page
-- [ ] Build child selector modal (choose which child for the clinic visit)
-- [ ] Generate QR code with child demographics on submit
-- [ ] Add disclaimer: ALIRA does not directly book appointments
-- [ ] QR code contains: child name, age, birthdate, gender, diagnosis status
+- [x] Remove Appointments from sidebar navigation in AppShell
+- [x] Remove "Upcoming Appointments" card from Dashboard
+- [x] Remove /appointments route from App.tsx
+- [x] Add "Contact" button to each clinic card in Clinics page
+- [x] Build child selector modal (choose which child for the clinic visit)
+- [x] Generate QR code with child demographics on submit
+- [x] Add disclaimer: ALIRA does not directly book appointments
+- [x] QR code contains: child name, age, birthdate, gender, diagnosis status

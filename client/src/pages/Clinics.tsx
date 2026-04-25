@@ -302,16 +302,16 @@ export default function Clinics() {
                               ({selectedClinic.user_ratings_total})
                             </span>
                           )}
-                          {selectedClinic.opening_hours?.open_now !== undefined && (
+                          {selectedClinic.opening_hours && (
                             <Badge
                               variant="outline"
                               className={`text-xs ml-1 ${
-                                selectedClinic.opening_hours.open_now
+                                typeof selectedClinic.opening_hours.isOpen === 'function' && selectedClinic.opening_hours.isOpen()
                                   ? "text-green-600 border-green-200 bg-green-50"
                                   : "text-red-600 border-red-200 bg-red-50"
                               }`}
                             >
-                              {selectedClinic.opening_hours.open_now ? "Open" : "Closed"}
+                              {typeof selectedClinic.opening_hours.isOpen === 'function' && selectedClinic.opening_hours.isOpen() ? "Open" : "Closed"}
                             </Badge>
                           )}
                         </div>
@@ -394,16 +394,16 @@ export default function Clinics() {
                                   )}
                                 </div>
                               )}
-                              {clinic.opening_hours?.open_now !== undefined && (
+                              {clinic.opening_hours && (
                                 <Badge
                                   variant="outline"
                                   className={`text-xs ${
-                                    clinic.opening_hours.open_now
+                                    typeof clinic.opening_hours.isOpen === 'function' && clinic.opening_hours.isOpen()
                                       ? "text-green-600 border-green-200 bg-green-50"
                                       : "text-red-600 border-red-200 bg-red-50"
                                   }`}
                                 >
-                                  {clinic.opening_hours.open_now ? "Open Now" : "Closed"}
+                                  {typeof clinic.opening_hours.isOpen === 'function' && clinic.opening_hours.isOpen() ? "Open Now" : "Closed"}
                                 </Badge>
                               )}
                             </div>
