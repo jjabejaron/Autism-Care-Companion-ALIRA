@@ -252,7 +252,7 @@ The following features are identified as high-value additions for future develop
 
 ## License
 
-This project was built as a capstone / thesis project. All rights reserved by the project authors. The codebase is not licensed for redistribution without explicit permission.
+This project was built as a hackathon project. All rights reserved by the project authors. The codebase is not licensed for redistribution without explicit permission.
 
 ---
 
