@@ -177,20 +177,22 @@ export default function Clinics() {
 
   const qrData =
     selectedChild && contactClinic
-      ? JSON.stringify({
-          child: {
-            name: selectedChild.name,
-            age: selectedChild.age,
-            birthdate: selectedChild.birthdate
-              ? new Date(selectedChild.birthdate).toLocaleDateString("en-PH")
-              : "N/A",
-            gender: selectedChild.gender,
-            clinicallyDiagnosed: selectedChild.isClinicallyDiagnosed ? "Yes" : "No",
-          },
-          clinic: contactClinic.name,
-          generatedBy: "ALIRA - Autism Care Companion",
-          generatedAt: new Date().toLocaleDateString("en-PH"),
-        })
+      ? [
+          "ALIRA - Autism Care Companion",
+          "Child Referral Card",
+          "================================",
+          `Name: ${selectedChild.name}`,
+          `Age: ${selectedChild.age} year${selectedChild.age === 1 ? "" : "s"} old`,
+          `Birthdate: ${selectedChild.birthdate ? new Date(selectedChild.birthdate).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" }) : "N/A"}`,
+          `Gender: ${selectedChild.gender ? selectedChild.gender.charAt(0).toUpperCase() + selectedChild.gender.slice(1) : "N/A"}`,
+          `Clinically Diagnosed: ${selectedChild.isClinicallyDiagnosed ? "Yes" : "No"}`,
+          "================================",
+          `Referred to: ${contactClinic.name}`,
+          `Date: ${new Date().toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })}`,
+          "--------------------------------",
+          "Referred via ALIRA App",
+          "alira-autism-care-companion.manus.space",
+        ].join("\n")
       : "";
 
   const handleDownloadQR = () => {
