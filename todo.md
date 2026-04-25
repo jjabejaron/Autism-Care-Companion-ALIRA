@@ -83,3 +83,13 @@
 - [x] Suppress console noise for expected TRPC validation errors (duplicate email, wrong password)
 - [x] Show inline "already registered" message with a direct link to /login on SignUp page
 - [x] Show inline "wrong credentials" message on Login page
+
+## Phase 15: Clinic Contact + QR Code Redesign
+- [ ] Remove Appointments from sidebar navigation in AppShell
+- [ ] Remove "Upcoming Appointments" card from Dashboard
+- [ ] Remove /appointments route from App.tsx
+- [ ] Add "Contact" button to each clinic card in Clinics page
+- [ ] Build child selector modal (choose which child for the clinic visit)
+- [ ] Generate QR code with child demographics on submit
+- [ ] Add disclaimer: ALIRA does not directly book appointments
+- [ ] QR code contains: child name, age, birthdate, gender, diagnosis status

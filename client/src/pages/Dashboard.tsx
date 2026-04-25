@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   Baby,
   BookOpen,
-  Calendar,
   ChevronRight,
   Heart,
   MapPin,
@@ -36,11 +35,9 @@ export default function Dashboard() {
     { enabled: !!selectedChild }
   );
 
-  const { data: appointments = [] } = trpc.appointments.list.useQuery();
   const { data: notifications = [] } = trpc.notifications.list.useQuery();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  const upcomingAppts = appointments.filter((a) => a.status !== "cancelled" && a.status !== "completed").slice(0, 3);
   const recentScores = scores.slice(0, 5);
   const avgScore = recentScores.length > 0 ? Math.round(recentScores.reduce((s, r) => s + r.score, 0) / recentScores.length) : 0;
 
@@ -114,15 +111,16 @@ export default function Dashboard() {
                 {selectedChild.name} is not yet clinically diagnosed
               </p>
               <p className="text-sm text-amber-700 mt-1">
-                We recommend scheduling an appointment with an autism specialist for a proper assessment.
+                We recommend visiting an autism specialist for a proper assessment. Find a clinic near you to get started.
               </p>
               <div className="flex gap-3 mt-3">
                 <Button
                   size="sm"
                   className="bg-amber-600 text-white hover:bg-amber-700 h-8 text-xs"
-                  onClick={() => navigate("/appointments")}
+                  onClick={() => navigate("/clinics")}
                 >
-                  Schedule Appointment
+                  <MapPin className="w-3 h-3 mr-1" />
+                  Find a Clinic
                 </Button>
                 <Button
                   size="sm"
@@ -157,7 +155,7 @@ export default function Dashboard() {
 
         {/* Stats grid */}
         {selectedChild && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <StatCard
               icon={<Activity className="w-5 h-5 text-primary" />}
               label="Avg. Activity Score"
@@ -171,13 +169,6 @@ export default function Dashboard() {
               value="6"
               sub="Across 2 age groups"
               color="bg-blue-50"
-            />
-            <StatCard
-              icon={<Calendar className="w-5 h-5 text-purple-600" />}
-              label="Upcoming Appointments"
-              value={upcomingAppts.length.toString()}
-              sub={upcomingAppts.length === 0 ? "None scheduled" : "Scheduled"}
-              color="bg-purple-50"
             />
             <StatCard
               icon={<Heart className="w-5 h-5 text-rose-600" />}
@@ -239,65 +230,37 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Upcoming appointments */}
-          <Card className="border-border">
+          {/* Find a Clinic CTA */}
+          <Card className="border-border bg-gradient-to-br from-primary/5 to-teal-50">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold">Upcoming Appointments</CardTitle>
-                <button
-                  onClick={() => navigate("/appointments")}
-                  className="text-xs text-primary hover:underline flex items-center gap-1"
-                >
-                  View all <ChevronRight className="w-3 h-3" />
-                </button>
-              </div>
+              <CardTitle className="text-base font-semibold">Find a Nearby Clinic</CardTitle>
             </CardHeader>
             <CardContent>
-              {upcomingAppts.length === 0 ? (
-                <div className="text-center py-6">
-                  <Calendar className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No upcoming appointments</p>
-                  <button
-                    onClick={() => navigate("/appointments")}
-                    className="text-xs text-primary hover:underline mt-2"
-                  >
-                    Book an appointment →
-                  </button>
+              <div className="text-center py-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <MapPin className="w-6 h-6 text-primary" />
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {upcomingAppts.map((appt) => (
-                    <div key={appt.id} className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
-                        <Calendar className="w-4 h-4 text-purple-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-foreground truncate">{appt.clinicName}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(appt.appointmentDate).toLocaleDateString()} at {appt.preferredTime}
-                        </div>
-                      </div>
-                      <Badge
-                        variant="secondary"
-                        className={`text-xs ${appt.status === "confirmed" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}
-                      >
-                        {appt.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
+                <p className="text-sm text-muted-foreground mb-4">
+                  Discover autism-specialized clinics and therapy centers near you in the Philippines.
+                </p>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/clinics")}
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Search Clinics
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Quick nav cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {[
             { icon: BookOpen, label: "Modules", path: "/modules", color: "text-blue-600 bg-blue-50" },
             { icon: TrendingUp, label: "Progress", path: "/progress", color: "text-green-600 bg-green-50" },
             { icon: MapPin, label: "Clinics", path: "/clinics", color: "text-teal-600 bg-teal-50" },
-            { icon: Calendar, label: "Appointments", path: "/appointments", color: "text-purple-600 bg-purple-50" },
             { icon: MessageCircle, label: "Talk to ALI", path: "/chat", color: "text-primary bg-primary/10" },
             { icon: Settings, label: "Settings", path: "/settings", color: "text-gray-600 bg-gray-50" },
           ].map((item) => (
