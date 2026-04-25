@@ -87,9 +87,8 @@ export const appRouter = router({
         });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-        return { success: true, user: { id: user.id, email: user.email, fullName: user.fullName } };
+        return { success: true, token: sessionToken, user: { id: user.id, email: user.email, fullName: user.fullName } };
       }),
-
     login: publicProcedure
       .input(
         z.object({
@@ -123,9 +122,8 @@ export const appRouter = router({
         });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-        return { success: true, user: { id: user.id, email: user.email, fullName: user.fullName } };
+        return { success: true, token: sessionToken, user: { id: user.id, email: user.email, fullName: user.fullName } };
       }),
-
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { tokenStore } from "@/lib/tokenStore";
 import { UNAUTHED_ERR_MSG } from '@shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
@@ -17,7 +18,8 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
-  // Redirect to custom login page instead of Manus OAuth portal
+  // Clear stored token and redirect to login
+  tokenStore.clear();
   if (window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
     window.location.href = "/login";
   }
@@ -58,9 +60,19 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       fetch(input, init) {
+        // Attach Authorization Bearer header if we have a stored token
+        const token = tokenStore.get();
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
+          headers: {
+            ...(init?.headers as Record<string, string> ?? {}),
+            ...headers,
+          },
         });
       },
     }),

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { tokenStore } from "@/lib/tokenStore";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,8 +28,12 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       setErrorMsg(null);
+      // Store token in localStorage for Authorization header
+      if (data.token) {
+        tokenStore.set(data.token);
+      }
       await utils.auth.me.invalidate();
       toast.success("Welcome back to ALIRA!");
       navigate("/dashboard");

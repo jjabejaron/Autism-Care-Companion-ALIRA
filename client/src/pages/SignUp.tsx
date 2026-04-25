@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { tokenStore } from "@/lib/tokenStore";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,9 +36,13 @@ export default function SignUp() {
   const [isDuplicate, setIsDuplicate] = useState(false);
 
   const registerMutation = trpc.auth.register.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       setErrorMsg(null);
       setIsDuplicate(false);
+      // Store token in localStorage for Authorization header
+      if (data.token) {
+        tokenStore.set(data.token);
+      }
       await utils.auth.me.invalidate();
       toast.success("Welcome to ALIRA! Let's set up your profile.");
       navigate("/onboarding");
