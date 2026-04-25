@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Brain, Calendar, Heart, MapPin, MessageCircle, Shield, Sparkles, Users } from "lucide-react";
+import { Brain, Calendar, Heart, MapPin, MessageCircle, QrCode, Shield, Sparkles, Users } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -25,9 +25,9 @@ const features = [
     color: "bg-green-50 text-green-600",
   },
   {
-    icon: Calendar,
-    title: "Appointment Scheduling",
-    description: "Book, manage, and track appointments for your child with automated reminders so nothing falls through the cracks.",
+    icon: QrCode,
+    title: "QR Demographics Card",
+    description: "Generate a child referral QR code pre-loaded with demographics. Show it at clinic reception to skip lengthy intake forms and speed up registration.",
     color: "bg-purple-50 text-purple-600",
   },
   {
