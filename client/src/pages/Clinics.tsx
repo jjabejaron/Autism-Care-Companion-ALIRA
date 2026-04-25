@@ -239,7 +239,7 @@ export default function Clinics() {
                   view === "list"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
+                }`} style={{color: '#ffffff', backgroundColor: '#72b3a1'}}
               >
                 <List className="w-4 h-4" /> List
               </button>
@@ -275,7 +275,7 @@ export default function Clinics() {
 
               {/* Selected clinic info panel */}
               {selectedClinic && (
-                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-10">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] sm:w-80 z-10">
                   <Card className="border-border shadow-lg">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-2 mb-2">
@@ -448,7 +448,7 @@ export default function Clinics() {
           if (!open) handleCloseModal();
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" style={{height: '680px'}}>
           {modalStep === "select-child" && (
             <>
               <DialogHeader>
