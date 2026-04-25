@@ -99,14 +99,14 @@ export default function SignUp() {
               Every child's journey<br />deserves the best<br />support.
             </h1>
             <p className="text-white/80 text-lg leading-relaxed">
-              Join thousands of Filipino families using ALIRA to support their children's growth and development.
+              Be one of the Filipino families who support their children's growth and development through ALIRA.
             </p>
           </motion.div>
         </div>
 
         <div className="relative z-10 grid grid-cols-3 gap-4">
           {[
-            { value: "2,400+", label: "Families" },
+            { value: "0", label: "Families" },
             { value: "6", label: "Modules" },
             { value: "ALI", label: "AI Companion" },
           ].map((stat) => (
