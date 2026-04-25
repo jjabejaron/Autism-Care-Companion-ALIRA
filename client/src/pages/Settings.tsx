@@ -95,9 +95,9 @@ export default function Settings() {
 
   const { data: notifications = [] } = trpc.notifications.list.useQuery();
   const unreadNotifs = notifications.filter((n) => !n.isRead);
-
+  const utils = trpc.useUtils();
   const markRead = trpc.notifications.markRead.useMutation({
-    onSuccess: () => trpc.useUtils().notifications.list.invalidate(),
+    onSuccess: () => utils.notifications.list.invalidate(),
   });
 
   const updateProfile = trpc.user.updateProfile.useMutation({
