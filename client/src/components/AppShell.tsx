@@ -1,11 +1,12 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Activity,
   Bell,
   BookOpen,
+  Check,
+  CheckCheck,
   Home,
   LogIn,
   MapPin,
@@ -13,9 +14,10 @@ import {
   MessageCircle,
   Settings,
   Sparkles,
+  TrendingUp,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 
 const NAV_ITEMS = [
@@ -27,16 +29,140 @@ const NAV_ITEMS = [
   { path: "/settings", icon: Settings, label: "Settings" },
 ];
 
+function NotificationPanel({
+  notifications,
+  onMarkAllRead,
+  onMarkRead,
+  onClose,
+}: {
+  notifications: Array<{ id: number; title: string; message: string; isRead: boolean; createdAt: Date }>;
+  onMarkAllRead: () => void;
+  onMarkRead: (id: number) => void;
+  onClose: () => void;
+}) {
+  const unread = notifications.filter((n) => !n.isRead);
+
+  return (
+    <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <span className="text-sm font-semibold text-foreground">Progress Updates</span>
+          {unread.length > 0 && (
+            <span className="text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium">
+              {unread.length}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {unread.length > 0 && (
+            <button
+              onClick={onMarkAllRead}
+              className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-primary/5 transition-colors"
+            >
+              <CheckCheck className="w-3 h-3" />
+              All read
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Notification list */}
+      <div className="max-h-80 overflow-y-auto">
+        {notifications.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
+              <Bell className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground mb-1">All caught up!</p>
+            <p className="text-xs text-muted-foreground">Progress updates will appear here after completing modules.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {notifications.slice(0, 15).map((n) => (
+              <div
+                key={n.id}
+                className={`flex gap-3 px-4 py-3 transition-colors ${
+                  n.isRead ? "bg-card" : "bg-primary/4"
+                }`}
+              >
+                <div className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center ${
+                  n.isRead ? "bg-muted" : "bg-primary/10"
+                }`}>
+                  <TrendingUp className={`w-3.5 h-3.5 ${n.isRead ? "text-muted-foreground" : "text-primary"}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className={`text-xs font-semibold leading-snug ${n.isRead ? "text-muted-foreground" : "text-foreground"}`}>
+                      {n.title}
+                    </p>
+                    {!n.isRead && (
+                      <button
+                        onClick={() => onMarkRead(n.id)}
+                        className="flex-shrink-0 text-primary hover:text-primary/70 mt-0.5"
+                        title="Mark as read"
+                      >
+                        <Check className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{n.message}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">
+                    {new Date(n.createdAt).toLocaleDateString("en-PH", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [location, navigate] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   const { data: notifications = [] } = trpc.notifications.list.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const utils = trpc.useUtils();
+  const markRead = trpc.notifications.markRead.useMutation({
+    onSuccess: () => utils.notifications.list.invalidate(),
+  });
+  const markAllRead = trpc.notifications.markAllRead.useMutation({
+    onSuccess: () => utils.notifications.list.invalidate(),
+  });
+
+  // Close panel when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    }
+    if (notifOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [notifOpen]);
 
   if (loading) {
     return (
@@ -116,11 +242,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   ALI
                 </span>
               )}
-              {item.path === "/settings" && unreadCount > 0 && (
-                <span className={`text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium ${isActive ? "bg-white/20 text-white" : "bg-primary text-primary-foreground"}`}>
-                  {unreadCount}
-                </span>
-              )}
             </button>
           );
         })}
@@ -182,17 +303,31 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {NAV_ITEMS.find((n) => n.path === location)?.label ?? "ALIRA"}
             </span>
           </div>
-          <button
-            onClick={() => navigate("/settings")}
-            className="relative text-muted-foreground hover:text-foreground"
-          >
-            <Bell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                {unreadCount}
-              </span>
+
+          {/* Bell notification button with pop-up panel */}
+          <div className="relative" ref={notifRef}>
+            <button
+              onClick={() => setNotifOpen((v) => !v)}
+              className="relative text-muted-foreground hover:text-foreground p-1.5 rounded-xl hover:bg-muted transition-colors"
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold leading-none">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {notifOpen && (
+              <NotificationPanel
+                notifications={notifications}
+                onMarkAllRead={() => markAllRead.mutate()}
+                onMarkRead={(id) => markRead.mutate({ id })}
+                onClose={() => setNotifOpen(false)}
+              />
             )}
-          </button>
+          </div>
         </header>
 
         <div className="flex-1">

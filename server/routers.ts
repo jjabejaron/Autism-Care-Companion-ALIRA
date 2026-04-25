@@ -314,6 +314,23 @@ export const appRouter = router({
           notes: input.notes ?? null,
           completedAt: new Date(),
         });
+        // Create a progress notification for the parent
+        const scoreLabel =
+          input.score >= 85 ? "Excellent" :
+          input.score >= 70 ? "Good" :
+          input.score >= 55 ? "Developing" :
+          input.score >= 35 ? "Emerging" : "Needs Support";
+        try {
+          await createNotification({
+            userId: ctx.user.id,
+            title: `Progress recorded for ${child.name}`,
+            message: `${child.name} completed a module activity with a score of ${input.score}% (${scoreLabel}). Keep up the great work!`,
+            type: "general",
+            isRead: false,
+          });
+        } catch (_) {
+          // Non-critical — don't fail the score recording if notification fails
+        }
         return { id, success: true };
       }),
   }),

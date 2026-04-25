@@ -34,10 +34,10 @@ const TRANSLATIONS = {
     languageDesc: "Choose your preferred language.",
     notifications: "Notifications",
     notificationsDesc: "Manage your notification preferences.",
-    appointmentReminders: "Appointment Reminders",
-    appointmentRemindersDesc: "Get notified before upcoming appointments.",
     progressAlerts: "Progress Alerts",
-    progressAlertsDesc: "Receive updates on your child's activity scores.",
+    progressAlertsDesc: "Get notified when a module score is recorded for your child.",
+    moduleCompletion: "Module Completion",
+    moduleCompletionDesc: "Receive a pop-up update each time your child completes a module activity.",
     signOut: "Sign Out",
     signOutDesc: "Sign out of your ALIRA account.",
   },
@@ -61,10 +61,10 @@ const TRANSLATIONS = {
     languageDesc: "Piliin ang iyong gustong wika.",
     notifications: "Mga Abiso",
     notificationsDesc: "Pamahalaan ang iyong mga kagustuhan sa abiso.",
-    appointmentReminders: "Mga Paalala sa Appointment",
-    appointmentRemindersDesc: "Maabisuhan bago ang mga paparating na appointment.",
     progressAlerts: "Mga Alerto sa Progreso",
-    progressAlertsDesc: "Makatanggap ng mga update sa mga aktibidad ng iyong anak.",
+    progressAlertsDesc: "Maabisuhan kapag naitala ang isang module score para sa iyong anak.",
+    moduleCompletion: "Pagkumpleto ng Module",
+    moduleCompletionDesc: "Makatanggap ng pop-up update tuwing kumukumpleto ng module activity ang iyong anak.",
     signOut: "Mag-sign Out",
     signOutDesc: "Mag-sign out sa iyong ALIRA account.",
   },
@@ -89,8 +89,8 @@ export default function Settings() {
   });
 
   const [notifPrefs, setNotifPrefs] = useState({
-    appointmentReminders: true,
     progressAlerts: true,
+    moduleCompletion: true,
   });
 
   const { data: notifications = [] } = trpc.notifications.list.useQuery();
@@ -299,22 +299,22 @@ export default function Settings() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between py-2">
                 <div>
-                  <div className="text-sm font-medium text-foreground">{t.appointmentReminders}</div>
-                  <div className="text-xs text-muted-foreground">{t.appointmentRemindersDesc}</div>
-                </div>
-                <Switch
-                  checked={notifPrefs.appointmentReminders}
-                  onCheckedChange={(v) => setNotifPrefs((p) => ({ ...p, appointmentReminders: v }))}
-                />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
                   <div className="text-sm font-medium text-foreground">{t.progressAlerts}</div>
                   <div className="text-xs text-muted-foreground">{t.progressAlertsDesc}</div>
                 </div>
                 <Switch
                   checked={notifPrefs.progressAlerts}
                   onCheckedChange={(v) => setNotifPrefs((p) => ({ ...p, progressAlerts: v }))}
+                />
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <div className="text-sm font-medium text-foreground">{t.moduleCompletion}</div>
+                  <div className="text-xs text-muted-foreground">{t.moduleCompletionDesc}</div>
+                </div>
+                <Switch
+                  checked={notifPrefs.moduleCompletion}
+                  onCheckedChange={(v) => setNotifPrefs((p) => ({ ...p, moduleCompletion: v }))}
                 />
               </div>
 

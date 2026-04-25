@@ -83,3 +83,11 @@
 - [x] Suppress console noise for expected TRPC validation errors (duplicate email, wrong password)
 - [x] Show inline "already registered" message with a direct link to /login on SignUp page
 - [x] Show inline "wrong credentials" message on Login page
+
+## Phase 16: Progress Notifications Redesign
+- [x] Add notification bell icon to AppShell header with unread count badge
+- [x] Build pop-up notification panel (dropdown) showing recent progress notifications
+- [x] Notifications are progress-based: score recorded with label (Excellent/Good/Developing/Emerging/Needs Support)
+- [x] Mark individual or all notifications as read from the pop-up panel
+- [x] Update Settings notifications section to remove Appointment Reminders, add Progress Alerts + Module Completion toggles
+- [x] Auto-create notification when a score is recorded in the Modules flow
