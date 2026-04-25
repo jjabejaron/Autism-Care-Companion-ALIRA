@@ -87,8 +87,8 @@ export default function SignUp() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)" }}>
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 flex items-center justify-center">
+              <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA" className="w-10 h-10 object-contain" />
             </div>
             <span className="text-white text-xl font-semibold tracking-wide">ALIRA</span>
           </div>
@@ -128,8 +128,8 @@ export default function SignUp() {
         >
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#0d7377" }}>
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA" className="w-8 h-8 object-contain" />
             </div>
             <span className="text-foreground font-semibold">ALIRA</span>
           </div>

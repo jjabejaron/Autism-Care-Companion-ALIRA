@@ -67,8 +67,8 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-primary-foreground" />
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA" className="w-8 h-8 object-contain" />
             </div>
             <span className="font-semibold text-foreground tracking-tight">
               ALIRA
@@ -101,7 +101,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
-                <Sparkles className="w-4 h-4" />
+                <img src="/manus-storage/alira_logo_983ee8e3.png" alt="" className="w-4 h-4 object-contain" />
                 Autism Care Companion for Filipino Families
               </div>
 

@@ -170,8 +170,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-            <Sparkles className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 flex items-center justify-center animate-pulse">
+            <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA" className="w-10 h-10 object-contain" />
           </div>
           <p className="text-sm text-muted-foreground">{t.common.loading}</p>
         </div>
@@ -183,8 +183,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <Sparkles className="w-8 h-8 text-primary" />
+          <div className="w-16 h-16 flex items-center justify-center mx-auto mb-6">
+            <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA" className="w-16 h-16 object-contain" />
           </div>
           <h2 className="text-2xl font-normal text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Welcome to ALIRA
@@ -214,8 +214,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-border flex-shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-primary-foreground" />
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <img src="/manus-storage/alira_logo_983ee8e3.png" alt="ALIRA logo" className="w-8 h-8 object-contain" />
         </div>
         <div>
           <div className="font-bold text-foreground text-sm tracking-wide">ALIRA</div>
