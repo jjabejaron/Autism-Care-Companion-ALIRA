@@ -619,9 +619,9 @@ export default function Modules() {
                     <div className="flex flex-col gap-2 w-full max-w-xs">
                       {nextModule ? (
                         <>
-                          <Button className="w-full" onClick={handleNextModule}>
-                            Next Module: {nextModule.title}
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                          <Button className="w-full overflow-hidden" onClick={handleNextModule}>
+                            <span className="truncate min-w-0 flex-1 text-left">Next: {nextModule.title}</span>
+                            <ArrowRight className="w-4 h-4 ml-2 flex-shrink-0" />
                           </Button>
                           <Button variant="outline" className="w-full" onClick={handleCloseModal}>
                             Close & Return to Modules
